@@ -1,0 +1,368 @@
+# Leipzig Bürgerbüro System
+
+A comprehensive digital citizen service platform for the city of Leipzig, enabling citizens to submit applications online and city staff to process them efficiently.
+
+## Features
+
+### For Citizens
+- Submit various administrative applications online
+- Track application status in real-time
+- Receive notifications about application progress
+- Mobile-responsive web interface
+- Native mobile app support
+
+### For Staff
+- Process applications efficiently through dashboard
+- Update application statuses
+- Manage citizen requests
+- Generate reports and analytics
+- Secure authentication system
+
+## Tech Stack
+
+### Backend
+- **FastAPI** - Modern Python web framework
+- **PostgreSQL** - Database
+- **SQLAlchemy** - ORM
+- **Alembic** - Database migrations
+- **Pydantic** - Data validation
+- **JWT** - Authentication
+
+### Frontend
+- **React.js** - Web application
+- **React Native** - Mobile application
+- **Axios** - HTTP client
+- **Material-UI/Bootstrap** - UI components
+
+### Infrastructure
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **Nginx** - Reverse proxy (production)
+
+## Quick Start with Docker
+
+### Prerequisites
+- Docker (20.10+)
+- Docker Compose (2.0+)
+- Git
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd leipzig-buergerbuero-system
+```
+
+### 2. Environment Setup
+Copy the example environment files and configure them:
+
+```bash
+# Backend environment
+cp backend/.env.example backend/.env
+
+# Frontend environment  
+cp frontend/.env.example frontend/.env
+```
+
+Edit the environment files with your specific configuration (see Environment Variables section below).
+
+### 3. Start the Application
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### 4. Initialize the Database
+```bash
+# Run database migrations
+docker-compose exec backend alembic upgrade head
+
+# Create initial admin user (optional)
+docker-compose exec backend python -c "
+from app.database import get_db
+from app.models.user import User
+from app.core.security import get_password_hash
+from sqlalchemy.orm import Session
+
+db = next(get_db())
+admin = User(
+    email='admin@leipzig.de',
+    hashed_password=get_password_hash('admin123'),
+    is_staff=True,
+    is_active=True
+)
+db.add(admin)
+db.commit()
+print('Admin user created: admin@leipzig.de / admin123')
+"
+```
+
+### 5. Access the Application
+- **Frontend (Citizens)**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+
+## Development Setup
+
+### Backend Development
+```bash
+cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your settings
+
+# Run database migrations
+alembic upgrade head
+
+# Start development server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Frontend Development
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your settings
+
+# Start development server
+npm start
+```
+
+### Mobile Development
+```bash
+cd mobile
+
+# Install dependencies
+npm install
+
+# For iOS
+npx react-native run-ios
+
+# For Android
+npx react-native run-android
+```
+
+## Environment Variables
+
+### Backend (.env)
+```bash
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/leipzig_db
+DB_HOST=postgres
+DB_PORT=5432
+DB_USER=leipzig_user
+DB_PASSWORD=secure_password
+DB_NAME=leipzig_buergerbuero
+
+# Security
+SECRET_KEY=your-super-secret-key-change-this-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+EMAIL_FROM=noreply@leipzig.de
+
+# Application Settings
+APP_NAME=Leipzig Bürgerbüro System
+DEBUG=true
+ALLOWED_HOSTS=localhost,127.0.0.1
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+
+# File Upload
+MAX_FILE_SIZE=10485760  # 10MB
+UPLOAD_DIR=./uploads
+ALLOWED_EXTENSIONS=pdf,jpg,jpeg,png,doc,docx
+
+# Redis (for caching, optional)
+REDIS_URL=redis://redis:6379/0
+
+# Logging
+LOG_LEVEL=INFO
+```
+
+### Frontend (.env)
+```bash
+# API Configuration
+REACT_APP_API_URL=http://localhost:8000
+REACT_APP_API_VERSION=v1
+
+# Application Settings
+REACT_APP_NAME=Leipzig Bürgerbüro
+REACT_APP_VERSION=1.0.0
+
+# Features
+REACT_APP_ENABLE_NOTIFICATIONS=true
+REACT_APP_MAX_FILE_SIZE=10485760
+
+# Analytics (optional)
+REACT_APP_GOOGLE_ANALYTICS_ID=GA-XXXXXXXXX
+
+# Maps (if using location services)
+REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-key
+```
+
+## Database Migrations
+
+### Create a New Migration
+```bash
+cd backend
+docker-compose exec backend alembic revision --autogenerate -m "Description of changes"
+```
+
+### Apply Migrations
+```bash
+docker-compose exec backend alembic upgrade head
+```
+
+### Rollback Migration
+```bash
+docker-compose exec backend alembic downgrade -1
+```
+
+## API Documentation
+
+The API documentation is automatically generated and available at:
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+### Main API Endpoints
+
+#### Authentication
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/refresh` - Refresh token
+
+#### Applications
+- `GET /api/v1/applications/` - List applications
+- `POST /api/v1/applications/` - Submit new application
+- `GET /api/v1/applications/{id}` - Get application details
+- `PUT /api/v1/applications/{id}` - Update application
+- `GET /api/v1/applications/status/{reference}` - Check status by reference
+
+#### Staff (Protected)
+- `GET /api/v1/staff/applications/` - List all applications
+- `PUT /api/v1/staff/applications/{id}/status` - Update application status
+- `GET /api/v1/staff/dashboard/stats` - Dashboard statistics
+
+## Testing
+
+### Backend Tests
+```bash
+cd backend
+docker-compose exec backend pytest
+```
+
+### Frontend Tests
+```bash
+cd frontend
+npm test
+```
+
+### Integration Tests
+```bash
+# Run all tests
+docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+```
+
+## Deployment
+
+### Production Deployment
+```bash
+# Set environment to production
+export NODE_ENV=production
+
+# Build and deploy
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Environment-Specific Configurations
+- **Development**: `docker-compose.yml`
+- **Testing**: `docker-compose.test.yml`
+- **Production**: `docker-compose.prod.yml`
+
+## Monitoring and Logs
+
+### View Logs
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f backend
+docker-compose logs -f frontend
+```
+
+### Health Checks
+- Backend: http://localhost:8000/health
+- Database: `docker-compose exec postgres pg_isready`
+
+## Backup and Restore
+
+### Database Backup
+```bash
+# Create backup
+docker-compose exec postgres pg_dump -U leipzig_user leipzig_buergerbuero > backup.sql
+
+# Restore backup
+docker-compose exec -T postgres psql -U leipzig_user leipzig_buergerbuero < backup.sql
+```
+
+## Security Considerations
+
+1. **Change default passwords** in production
+2. **Use HTTPS** in production environments
+3. **Configure firewall** rules appropriately
+4. **Regular security updates** for dependencies
+5. **Backup encryption** for sensitive data
+6. **Rate limiting** on API endpoints
+7. **Input validation** on all forms
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support and questions:
+- Email: support@leipzig.de
+- Documentation: `/documentation/`
+- Issues: GitHub Issues page
+
+## Changelog
+
+### Version 1.0.0
+- Initial release
+- Basic application submission and tracking
+- Staff dashboard
+- Mobile-responsive design
+- Docker containerization

@@ -122,23 +122,8 @@ fi
 # Generate secret key for backend
 print_status "Generating secret key..."
 SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))" 2>/dev/null || openssl rand -base64 32)
-sed -i "s/your-secret-key-change-in-production-make-it-very-long-and-random/$SECRET_KEY/" backend/.env
+sed -i '' "s/hfkljewhflkewhfkewfhlekwrfgoewrgfkerwgklwrbgkowegbklwebgkwebgekbgkwem/$SECRET_KEY/" backend/.env
 
-# Install Python dependencies locally (optional)
-if command -v python3 &> /dev/null && command -v pip &> /dev/null; then
-    print_status "Installing Python dependencies locally..."
-    cd backend
-    if [ ! -d "venv" ]; then
-        python3 -m venv venv
-        print_success "Virtual environment created"
-    fi
-    source venv/bin/activate
-    pip install -r requirements.txt
-    print_success "Python dependencies installed"
-    cd ..
-else
-    print_warning "Skipping local Python setup - will use Docker instead"
-fi
 
 # Set up pre-commit hooks (if available)
 if command -v pre-commit &> /dev/null; then
@@ -158,10 +143,10 @@ fi
 
 # Build and start services
 print_status "Building Docker containers..."
-docker-compose build
+docker compose build
 
 print_status "Starting services..."
-docker-compose up -d db redis
+docker compose up -d db redis
 
 # Wait for database to be ready
 print_status "Waiting for database to be ready..."
@@ -169,7 +154,7 @@ sleep 10
 
 # Run database migrations
 print_status "Running database migrations..."
-docker-compose run --rm backend alembic upgrade head || print_warning "No migrations to run yet"
+docker compose run --rm backend alembic upgrade head || print_warning "No migrations to run yet"
 
 # Create admin user (optional)
 read -p "Do you want to create an admin user? (y/n): " -n 1 -r
@@ -182,7 +167,7 @@ fi
 
 # Start all services
 print_status "Starting all services..."
-docker-compose up -d
+docker compose up -d
 
 # Display status
 echo

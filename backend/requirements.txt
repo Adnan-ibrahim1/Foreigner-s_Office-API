@@ -1,37 +1,28 @@
-# FastAPI and dependencies
+# FastAPI and ASGI server
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-python-multipart==0.0.6
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
 
 # Database
 sqlalchemy==2.0.23
-alembic==1.12.1
-psycopg2-binary==2.9.9  # For PostgreSQL
-sqlite3  # Built-in Python module
+psycopg2-binary==2.9.9
+alembic==1.13.1
 
-# Pydantic and validation
+# Authentication and Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Validation and Serialization
 pydantic==2.5.0
 pydantic-settings==2.1.0
-email-validator==2.1.0
 
-# Authentication and security
-python-jose==3.3.0
-bcrypt==4.1.2
-cryptography==41.0.8
+# Email
+emails==0.6.0
+jinja2==3.1.2
 
 # HTTP client
 httpx==0.25.2
 requests==2.31.0
-
-# Email
-aiosmtplib==3.0.1
-jinja2==3.1.2
-
-# File handling
-python-magic==0.4.27
-pillow==10.1.0
 
 # Date and time
 python-dateutil==2.8.2
@@ -39,98 +30,37 @@ python-dateutil==2.8.2
 # Environment variables
 python-dotenv==1.0.0
 
-# Background tasks
+# File handling
+aiofiles==23.2.1
+python-magic==0.4.27
+
+# Utilities
 celery==5.3.4
 redis==5.0.1
-
-# Logging
-structlog==23.2.0
 
 # Testing
 pytest==7.4.3
 pytest-asyncio==0.21.1
-httpx==0.25.2  # For testing FastAPI
-faker==20.1.0
+httpx==0.25.2
 
-# Development tools
+# Development
 black==23.11.0
-flake8==6.1.0
 isort==5.12.0
-mypy==1.7.1
+flake8==6.1.0
 
-# Production server
-gunicorn==21.2.0
-
-# Monitoring and health checks
-prometheus-client==0.19.0
-
-# File upload and storage
-boto3==1.34.0  # For AWS S3 if needed
-azure-storage-blob==12.19.0  # For Azure Blob if needed
-
-# Internationalization
-babel==2.13.1
-
-# PDF processing
-pypdf2==3.0.1
-reportlab==4.0.7
-
-# Excel/CSV processing
-pandas==2.1.4
-openpyxl==3.1.2
-
-# QR Code generation (for application IDs)
-qrcode[pil]==7.4.2
-
-# SMS notifications (optional)
-twilio==8.11.0
-
-# Rate limiting
-slowapi==0.1.9
+# Logging
+structlog==23.2.0
 
 # CORS
-fastapi-cors==0.0.6
+flask-cors==1.0.0
 
-# Middleware
-starlette==0.27.0
 
-# UUID generation
+# Excel/CSV processing
+openpyxl==3.1.2
+pandas==2.1.4
+
+# Image processing (for file uploads)
+Pillow==10.1.0
+
+# UUID
 uuid==1.30
-
-# Configuration management
-dynaconf==3.2.4
-
-# API documentation
-fastapi-users==12.1.2
-
-# Cache
-redis==5.0.1
-hiredis==2.2.3
-
-# Background job queue
-rq==1.15.1
-
-# Health checks
-fastapi-health==0.4.0
-
-# Metrics and monitoring
-fastapi-instrumentator==6.1.0
-
-# WebSocket support (if needed for real-time updates)
-websockets==12.0
-
-# Image processing
-pillow==10.1.0
-
-# Data validation
-validators==0.22.0
-
-# Timezone handling
-pytz==2023.3
-
-# JSON Web Tokens
-pyjwt==2.8.0
-
-# Development dependencies (optional, for local development)
-# watchdog==3.0.0  # For file watching in development
-# pre-commit==3.6.0  # For git hooks
