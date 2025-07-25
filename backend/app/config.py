@@ -1,51 +1,53 @@
-from pydantic_settings import BaseSettings
-from typing import List, ClassVar
-import os
+# app/config.py
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 class Settings(BaseSettings):
-    # Application settings
-    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
-    
     # Database settings
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./leipzig_buergerbuero.db")
+    DATABASE_URL: Optional[str] = None
     
-    # Security settings
-    ALLOWED_HOSTS: List[str] = ["localhost", "127.0.0.1", "leipzig.de"]
+    # JWT settings
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
-    # Email settings
-    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
-    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
-    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
-    EMAIL_FROM: str = os.getenv("EMAIL_FROM", "noreply@leipzig.de")
+    # App settings
+    APP_NAME: str = "Leipzig Bürgerbüro System"
+    ENVIRONMENT: str = "development"
+    DEBUG: bool = True  # Set to True for development, False for production
     
-    # SMS settings (optional)
-    SMS_API_KEY: str = os.getenv("SMS_API_KEY", "")
-    SMS_API_URL: str = os.getenv("SMS_API_URL", "")
+    # CORS settings
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
     
-    # Processing time estimates (in days)
-    PROCESSING_TIMES: ClassVar[dict[str, int]] = {
-        "anmeldung": 3,
-        "passport": 14,
-        "visa_extension": 21,
-        "work_permit": 28,
-        "residence_permit": 35,
-    }
-    
-    # Supported languages
-    SUPPORTED_LANGUAGES: List[str] = ["de", "en", "ar", "fr", "es"]
+    # SMTP settings
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: Optional[int] = None
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
     
     # File upload settings
+    ALLOWED_EXTENSIONS: str = "pdf,jpg,jpeg,png,doc,docx"
+    ALLOWED_HOSTS: str = "localhost"
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
-    ALLOWED_FILE_TYPES: List[str] = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"]
-    UPLOAD_DIR: str = "uploads/"
+    
+    # Logging
+    LOG_LEVEL: str = "INFO"
+    
+    # Configure the settings
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"  # This allows extra environment variables to be ignored
+    )
+
+# Alternative approach if you're using an older version of pydantic-settings
+class SettingsLegacy(BaseSettings):
+    # ... same fields as above ...
     
     class Config:
         env_file = ".env"
-        case_sensitive = True
+        env_file_encoding = "utf-8"
+        extra = "ignore"  # This is the key setting
 
-# Create global settings instance
+# Create settings instance
 settings = Settings()
