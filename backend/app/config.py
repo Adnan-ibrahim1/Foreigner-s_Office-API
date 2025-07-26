@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     
     # File upload settings
     ALLOWED_EXTENSIONS: str = "pdf,jpg,jpeg,png,doc,docx"
-    ALLOWED_HOSTS: str = "localhost"
+    ALLOWED_HOSTS: str = ["http://localhost", "http://127.0.0.1", "http://localhost:8000"]
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
     
     # Logging
