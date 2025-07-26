@@ -1,9 +1,222 @@
-import uuid
-import secrets
-import string
+# app/utils/helpers.py
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
 from app.models.application import ApplicationType, ApplicationStatus
+from typing import Dict, Any, Optional
+import logging
+import uuid
+import random
+import string
+import secrets
+import uuid
+from datetime import datetime
+from sqlalchemy.orm import Session
+from app.models.application import Message, Staff
+
+
+logger = logging.getLogger(__name__)
+
+def generate_application_id() -> str:
+    """Generate a unique application ID"""
+    # Format: LB-YYYY-XXXXXX (LB = Leipzig Bürgerbüro)
+    year = datetime.now().year
+    random_part = ''.join(random.choices(string.digits, k=6))
+    return f"LB-{year}-{random_part}"
+
+def calculate_estimated_completion(application_type) -> datetime:
+    """
+    Calculate estimated completion date based on application type
+    Returns completion date in business days (excluding weekends)
+    """
+    try:
+        logger.info(f"Calculating completion time for: {application_type}")
+        
+        # Handle ApplicationType enum or string
+        if hasattr(application_type, 'value'):
+            # It's already an enum, get its value
+            app_type_str = application_type.value
+        elif isinstance(application_type, str):
+            app_type_str = application_type.lower()
+        else:
+            app_type_str = str(application_type).lower()
+        
+        # Find matching enum
+        app_type = None
+        for enum_item in ApplicationType:
+            if enum_item.value == app_type_str:
+                app_type = enum_item
+                break
+        
+        if app_type is None:
+            logger.warning(f"Unknown application type: {application_type}, using default")
+            app_type = ApplicationType.OTHER
+
+        # Processing time mapping (in business days)
+        processing_times = {
+            # Identity Documents (longer processing)
+            ApplicationType.PASSPORT: 21,           # 3 weeks
+            ApplicationType.ID_CARD: 14,            # 2 weeks
+            ApplicationType.DRIVER_LICENSE: 10,     # 2 weeks
+            
+            # Certificates (quick processing)
+            ApplicationType.BIRTH_CERTIFICATE: 5,   # 1 week
+            ApplicationType.MARRIAGE_CERTIFICATE: 5,
+            ApplicationType.DEATH_CERTIFICATE: 5,
+            ApplicationType.CRIMINAL_RECORD: 7,     # 1 week
+            
+            # Residence Services (very quick)
+            ApplicationType.ANMELDUNG: 1,                     # Same day (German)
+            ApplicationType.RESIDENCE_REGISTRATION: 1,        # Same day
+            ApplicationType.ABMELDUNG: 1,                     # Same day (German)
+            ApplicationType.RESIDENCE_DEREGISTRATION: 1,      # Same day
+            ApplicationType.RESIDENCE_CERTIFICATE: 3,         # 3 days
+            
+            # Business Services (moderate processing)
+            ApplicationType.BUSINESS_REGISTRATION: 10,    # 2 weeks
+            ApplicationType.BUSINESS_LICENSE: 21,         # 3 weeks
+            ApplicationType.TRADE_LICENSE: 14,            # 2 weeks
+            
+            # Social Services (longer processing due to verification)
+            ApplicationType.LOAN: 30,                     # 6 weeks
+            ApplicationType.SOCIAL_BENEFITS: 21,          # 3 weeks
+            ApplicationType.UNEMPLOYMENT_BENEFITS: 14,    # 2 weeks
+            ApplicationType.CHILD_ALLOWANCE: 10,          # 2 weeks
+            
+            # Tax and Financial
+            ApplicationType.TAX_CERTIFICATE: 7,           # 1 week
+            ApplicationType.TAX_RETURN: 14,               # 2 weeks
+            ApplicationType.INCOME_CERTIFICATE: 5,        # 1 week
+            
+            # Permits and Licenses (varies by complexity)
+            ApplicationType.PARKING_PERMIT: 5,            # 1 week
+            ApplicationType.BUILDING_PERMIT: 60,          # 3 months
+            ApplicationType.EVENT_PERMIT: 14,             # 2 weeks
+            
+            # Other Services
+            ApplicationType.NOTARY_SERVICE: 3,            # 3 days
+            ApplicationType.APOSTILLE: 7,                 # 1 week
+            ApplicationType.OTHER: 14,                    # Default 2 weeks
+        }
+        
+        # Get processing days, default to 14 if not found
+        processing_days = processing_times.get(app_type, 14)
+        logger.info(f"Processing time for {app_type}: {processing_days} business days")
+        
+        # Calculate estimated completion (excluding weekends)
+        estimated_date = datetime.now()
+        days_added = 0
+        
+        while days_added < processing_days:
+            estimated_date += timedelta(days=1)
+            # Skip weekends (Monday = 0, Sunday = 6)
+            if estimated_date.weekday() < 5:  # Monday to Friday
+                days_added += 1
+        
+        logger.info(f"Estimated completion date: {estimated_date}")
+        return estimated_date
+        
+    except Exception as e:
+        logger.error(f"Error calculating estimated completion for {application_type}: {e}")
+        # Return default processing time on error (14 business days)
+        return add_business_days(datetime.now(), 14)
+
+def calculate_progress_percentage(status: ApplicationStatus) -> int:
+    """Calculate progress percentage based on application status."""
+    status_progress = {
+        ApplicationStatus.DRAFT: 0,
+        ApplicationStatus.SUBMITTED: 10,
+        ApplicationStatus.UNDER_REVIEW: 30,
+        ApplicationStatus.APPROVED: 100,
+        ApplicationStatus.REJECTED: 0,
+        ApplicationStatus.PENDING_DOCUMENTS: 50,
+        ApplicationStatus.CANCELLED: 0
+    }
+    return status_progress.get(status, 0)
+
+
+def add_business_days(start_date: datetime, business_days: int) -> datetime:
+    """Add business days to a date (excluding weekends)"""
+    current_date = start_date
+    days_added = 0
+    
+    while days_added < business_days:
+        current_date += timedelta(days=1)
+        if current_date.weekday() < 5:  # Monday to Friday
+            days_added += 1
+    
+    return current_date
+
+def get_application_type_display_name(application_type: str, language: str = "de") -> str:
+    """Get human-readable display name for application type"""
+    
+    display_names = {
+        "de": {  # German
+            ApplicationType.PASSPORT: "Reisepass",
+            ApplicationType.ID_CARD: "Personalausweis",
+            ApplicationType.BIRTH_CERTIFICATE: "Geburtsurkunde",
+            ApplicationType.MARRIAGE_CERTIFICATE: "Heiratsurkunde",
+            ApplicationType.ANMELDUNG: "Anmeldung",
+            ApplicationType.RESIDENCE_REGISTRATION: "Anmeldung",
+            ApplicationType.ABMELDUNG: "Abmeldung",
+            ApplicationType.RESIDENCE_DEREGISTRATION: "Abmeldung",
+            ApplicationType.BUSINESS_REGISTRATION: "Gewerbeanmeldung",
+            ApplicationType.LOAN: "Darlehen",
+            ApplicationType.SOCIAL_BENEFITS: "Sozialleistungen",
+            ApplicationType.PARKING_PERMIT: "Parkausweis",
+            ApplicationType.BUILDING_PERMIT: "Baugenehmigung",
+            ApplicationType.OTHER: "Sonstiges",
+        },
+        "en": {  # English
+            ApplicationType.PASSPORT: "Passport",
+            ApplicationType.ID_CARD: "ID Card",
+            ApplicationType.BIRTH_CERTIFICATE: "Birth Certificate",
+            ApplicationType.MARRIAGE_CERTIFICATE: "Marriage Certificate",
+            ApplicationType.ANMELDUNG: "Residence Registration",
+            ApplicationType.RESIDENCE_REGISTRATION: "Residence Registration",
+            ApplicationType.ABMELDUNG: "Residence Deregistration", 
+            ApplicationType.RESIDENCE_DEREGISTRATION: "Residence Deregistration",
+            ApplicationType.BUSINESS_REGISTRATION: "Business Registration",
+            ApplicationType.LOAN: "Loan Application",
+            ApplicationType.SOCIAL_BENEFITS: "Social Benefits",
+            ApplicationType.PARKING_PERMIT: "Parking Permit",
+            ApplicationType.BUILDING_PERMIT: "Building Permit",
+            ApplicationType.OTHER: "Other",
+        }
+    }
+    
+    try:
+        app_type = ApplicationType(application_type.lower())
+        return display_names.get(language, display_names["en"]).get(app_type, application_type)
+    except ValueError:
+        return application_type
+    
+def validate_json_schema(data: Dict[str, Any], required_fields: list) -> Dict[str, Any]:
+    """Validate JSON data against required fields."""
+    errors = []
+    
+    for field in required_fields:
+        if field not in data:
+            errors.append(f"Missing required field: {field}")
+        elif not data[field]:
+            errors.append(f"Field '{field}' cannot be empty")
+    
+    return {
+        'valid': len(errors) == 0,
+        'errors': errors
+    }
+
+
+def safe_dict_get(dictionary: Dict[str, Any], key: str, default: Any = None) -> Any:
+    """Safely get value from dictionary with nested key support."""
+    keys = key.split('.')
+    current = dictionary
+    
+    for k in keys:
+        if isinstance(current, dict) and k in current:
+            current = current[k]
+        else:
+            return default
+    
+    return current
 
 
 def generate_uuid() -> str:
@@ -247,62 +460,77 @@ def time_ago(dt: datetime) -> str:
     else:
         return "Just now"
 
-def calculate_estimated_completion(application_type: ApplicationType) -> timedelta:
-    """Calculate estimated completion time based on application type."""
-    if application_type == ApplicationType.LOAN:
-        return timedelta(days=5)
-    elif application_type == ApplicationType.CREDIT_CARD:
-        return timedelta(days=7)
-    elif application_type == ApplicationType.MORTGAGE:
-        return timedelta(days=30)
-    elif application_type == ApplicationType.PERSONAL_LOAN:
-        return timedelta(days=10)
-    elif application_type == ApplicationType.BUSINESS_LOAN:
-        return timedelta(days=15)
-    elif application_type == ApplicationType.AUTO_LOAN:
-        return timedelta(days=20)
-    else:
-        return timedelta(days=7)  # Default case
-
-def calculate_progress_percentage(status: ApplicationStatus) -> int:
-    """Calculate progress percentage based on application status."""
-    status_progress = {
-        ApplicationStatus.DRAFT: 0,
-        ApplicationStatus.SUBMITTED: 10,
-        ApplicationStatus.UNDER_REVIEW: 30,
-        ApplicationStatus.APPROVED: 100,
-        ApplicationStatus.REJECTED: 0,
-        ApplicationStatus.PENDING_DOCUMENTS: 50,
-        ApplicationStatus.CANCELLED: 0
-    }
-    return status_progress.get(status, 0)
-
-
-def validate_json_schema(data: Dict[str, Any], required_fields: list) -> Dict[str, Any]:
-    """Validate JSON data against required fields."""
-    errors = []
+def create_applicant_message(
+    db: Session,
+    application_id: str,
+    message_text: str,
+    sender_name: str = "Applicant"
+) -> Message:
+    """Create a message from an applicant"""
     
-    for field in required_fields:
-        if field not in data:
-            errors.append(f"Missing required field: {field}")
-        elif not data[field]:
-            errors.append(f"Field '{field}' cannot be empty")
+    message = Message(
+        id=str(uuid.uuid4()),
+        application_id=application_id,
+        sender_type="applicant",
+        sender_id=None,  # No foreign key for applicants
+        sender_name=sender_name,
+        message=message_text,
+        is_internal=False
+    )
     
-    return {
-        'valid': len(errors) == 0,
-        'errors': errors
-    }
+    db.add(message)
+    return message
 
+def create_staff_message(
+    db: Session,
+    application_id: str,
+    message_text: str,
+    staff_id: str,
+    is_internal: bool = False
+) -> Message:
+    """Create a message from a staff member"""
+    
+    # Get staff member details
+    staff = db.query(Staff).filter(Staff.id == staff_id).first()
+    if not staff:
+        raise ValueError(f"Staff member with ID {staff_id} not found")
+    
+    message = Message(
+        id=str(uuid.uuid4()),
+        application_id=application_id,
+        sender_type="staff",
+        sender_id=staff_id,  # Foreign key to staff table
+        sender_name=f"{staff.first_name} {staff.last_name}",
+        message=message_text,
+        is_internal=is_internal
+    )
+    
+    db.add(message)
+    return message
 
-def safe_dict_get(dictionary: Dict[str, Any], key: str, default: Any = None) -> Any:
-    """Safely get value from dictionary with nested key support."""
-    keys = key.split('.')
-    current = dictionary
+def get_application_messages(
+    db: Session,
+    application_id: str,
+    include_internal: bool = False
+) -> list:
+    """Get all messages for an application"""
     
-    for k in keys:
-        if isinstance(current, dict) and k in current:
-            current = current[k]
-        else:
-            return default
+    query = db.query(Message).filter(Message.application_id == application_id)
     
-    return current
+    if not include_internal:
+        query = query.filter(Message.is_internal == False)
+    
+    return query.order_by(Message.created_at.desc()).all()
+
+def get_staff_messages(
+    db: Session,
+    staff_id: str,
+    limit: int = 50
+) -> list:
+    """Get recent messages sent by a staff member"""
+    
+    return db.query(Message).filter(
+        Message.sender_id == staff_id
+    ).order_by(
+        Message.created_at.desc()
+    ).limit(limit).all()

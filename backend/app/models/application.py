@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 from enum import Enum as PyEnum
+from datetime import datetime
 
 class ApplicationStatus(str, PyEnum):
     EINGEGANGEN = "eingegangen"  # Received
@@ -76,7 +77,7 @@ class StatusUpdate(Base):
     old_status = Column(Enum(ApplicationStatus))
     new_status = Column(Enum(ApplicationStatus), nullable=False)
     message = Column(Text)
-    updated_by = Column(String, ForeignKey("users.id"))
+    updated_by = Column(String, ForeignKey("users.id"), nullable=True)  
     created_at = Column(DateTime, default=func.now())
     
     # Relationships
@@ -105,18 +106,39 @@ class Document(Base):
     application = relationship("Application", back_populates="documents")
     verified_by_user = relationship("User")
 
+class Staff(Base):
+    __tablename__ = "staff"
+    
+    id = Column(String, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    department = Column(String, default="General")
+    role = Column(String, nullable=False, default="processor")  # 'admin', 'processor', 'supervisor'
+    is_active = Column(Boolean, default=True)
+    hashed_password = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_login = Column(DateTime)
+    
+    # Relationship to messages they send
+    sent_messages = relationship("Message", back_populates="sender", cascade="all, delete-orphan")
+
 class Message(Base):
     __tablename__ = "messages"
     
-    id = Column(String, primary_key=True, index=True)
-    application_id = Column(String, ForeignKey("applications.id"), nullable=False)
-    sender_type = Column(String, nullable=False)  # 'citizen' or 'staff'
-    sender_id = Column(String)  # User ID if staff, null if citizen
-    message = Column(Text, nullable=False)
-    is_internal = Column(Boolean, default=False)  # Internal staff messages
-    created_at = Column(DateTime, default=func.now())
-    read_at = Column(DateTime)
+    id = Column(String, primary_key=True)
+    application_id = Column(String, ForeignKey("applications.id", ondelete="CASCADE"), nullable=False)
     
-    # Relationships
+    # Sender information with proper foreign key
+    sender_type = Column(String, nullable=False, default="applicant")  # 'staff' or 'applicant'
+    sender_id = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)  # References staff.id, NULL for applicants
+    sender_name = Column(String, nullable=False, default="Applicant")  # Display name
+    
+    message = Column(Text, nullable=False)
+    is_internal = Column(Boolean, default=False)  # Internal staff notes
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Proper relationships with foreign keys
     application = relationship("Application", back_populates="messages")
-    sender = relationship("User", foreign_keys=[sender_id])
+    sender = relationship("Staff", back_populates="sent_messages") 

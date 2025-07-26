@@ -1,38 +1,18 @@
-# Multi-stage build for React app
+FROM node:18-alpine
 
-# Build stage
-FROM node:18-alpine as build
-
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy source code
 COPY . .
 
-# Build the app
-RUN npm run build
+EXPOSE 3000
 
-# Production stage
-FROM nginx:alpine
+ENV HOST=0.0.0.0
+ENV PORT=3000
 
-# Copy built app from build stage
-COPY --from=build /app/build /usr/share/nginx/html
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+CMD curl -f http://localhost:3000 || exit 1
 
-# Copy nginx configuration
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]

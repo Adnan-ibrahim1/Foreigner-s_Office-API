@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Enum
+from sqlalchemy import Column, String, DateTime, Boolean, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -35,6 +35,7 @@ class User(Base):
     # Account metadata
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    updated_by = Column(String, ForeignKey("users.id"), nullable=True)
     last_login = Column(DateTime)
     last_activity = Column(DateTime)
     
