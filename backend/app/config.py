@@ -1,6 +1,7 @@
 # app/config.py
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
+from typing import Optional, List
+
 
 class Settings(BaseSettings):
     # Database settings
@@ -27,7 +28,7 @@ class Settings(BaseSettings):
     
     # File upload settings
     ALLOWED_EXTENSIONS: str = "pdf,jpg,jpeg,png,doc,docx"
-    ALLOWED_HOSTS: str = ["http://localhost", "http://127.0.0.1", "http://localhost:8000"]
+    ALLOWED_HOSTS: List[str] = ["http://localhost", "http://127.0.0.1", "http://localhost:8000"]
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
     
     # Logging
@@ -40,14 +41,6 @@ class Settings(BaseSettings):
         extra="ignore"  # This allows extra environment variables to be ignored
     )
 
-# Alternative approach if you're using an older version of pydantic-settings
-class SettingsLegacy(BaseSettings):
-    # ... same fields as above ...
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"  # This is the key setting
 
 # Create settings instance
 settings = Settings()
