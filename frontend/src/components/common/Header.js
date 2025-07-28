@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import authService from '../../services/auth';
+import { T } from '../common/LanguageSwitcher';
 
 const Header = () => {
   const location = useLocation();
@@ -17,9 +18,9 @@ const Header = () => {
       <div className="container">
         <div className="header-content">
           <Link to="/" className="logo">
-            <h1>Leipzig Bürgerbüro</h1>
+            <h1><T>Leipzig Bürgerbüro</T></h1>
           </Link>
-          
+
           <nav className="nav">
             {!isStaffArea ? (
               <>
@@ -27,22 +28,22 @@ const Header = () => {
                   to="/" 
                   className={location.pathname === '/' ? 'nav-link active' : 'nav-link'}
                 >
-                  Startseite
+                  <T>Startseite</T>
                 </Link>
                 <Link 
                   to="/submit" 
                   className={location.pathname === '/submit' ? 'nav-link active' : 'nav-link'}
                 >
-                  Antrag stellen
+                  <T>Antrag stellen</T>
                 </Link>
                 <Link 
                   to="/status" 
                   className={location.pathname === '/status' ? 'nav-link active' : 'nav-link'}
                 >
-                  Status prüfen
+                  <T>Status prüfen</T>
                 </Link>
                 <Link to="/staff" className="nav-link staff-link">
-                  Mitarbeiter-Bereich
+                  <T>Mitarbeiter-Bereich</T>
                 </Link>
               </>
             ) : (
@@ -51,15 +52,15 @@ const Header = () => {
                   to="/staff" 
                   className={location.pathname === '/staff' ? 'nav-link active' : 'nav-link'}
                 >
-                  Dashboard
+                  <T>Dashboard</T>
                 </Link>
                 {user && (
                   <>
                     <span className="user-info">
-                      Willkommen, {user.name}
+                      <T>Willkommen</T>, {user.name}
                     </span>
                     <button onClick={handleLogout} className="logout-btn">
-                      Abmelden
+                      <T>Abmelden</T>
                     </button>
                   </>
                 )}

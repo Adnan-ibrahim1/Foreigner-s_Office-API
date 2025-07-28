@@ -1,4 +1,5 @@
 import React from 'react';
+import { T } from '../common/LanguageSwitcher';
 
 const Footer = () => {
   return (
@@ -6,54 +7,54 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>Kontakt</h3>
+            <h3><T>Kontakt</T></h3>
             <p>
-              <strong>Leipzig Bürgerbüro</strong><br />
-              Neues Rathaus<br />
-              Martin-Luther-Ring 4-6<br />
-              04109 Leipzig
+              <strong><T>Leipzig Bürgerbüro</T></strong><br />
+              <T>Neues Rathaus</T><br />
+              <T>Martin-Luther-Ring 4-6</T><br />
+              <T>04109 Leipzig</T>
             </p>
             <p>
-              <strong>Telefon:</strong> {process.env.REACT_APP_CONTACT_PHONE || '+49 341 123456'}<br />
-              <strong>E-Mail:</strong> {process.env.REACT_APP_CONTACT_EMAIL || 'buergerbuero@leipzig.de'}
-            </p>
-          </div>
-          
-          <div className="footer-section">
-            <h3>Öffnungszeiten</h3>
-            <p>
-              <strong>Montag - Mittwoch:</strong> 8:00 - 16:00 Uhr<br />
-              <strong>Donnerstag:</strong> 8:00 - 18:00 Uhr<br />
-              <strong>Freitag:</strong> 8:00 - 12:00 Uhr<br />
-              <strong>Samstag:</strong> Geschlossen
+              <strong><T>Telefon</T>:</strong> {process.env.REACT_APP_CONTACT_PHONE || '+49 341 123456'}<br />
+              <strong><T>E-Mail</T>:</strong> {process.env.REACT_APP_CONTACT_EMAIL || 'buergerbuero@leipzig.de'}
             </p>
           </div>
-          
+
           <div className="footer-section">
-            <h3>Services</h3>
+            <h3><T>Öffnungszeiten</T></h3>
+            <p>
+              <strong><T>Montag - Mittwoch</T>:</strong> <T>8:00 - 16:00 Uhr</T><br />
+              <strong><T>Donnerstag</T>:</strong> <T>8:00 - 18:00 Uhr</T><br />
+              <strong><T>Freitag</T>:</strong> <T>8:00 - 12:00 Uhr</T><br />
+              <strong><T>Samstag</T>:</strong> <T>Geschlossen</T>
+            </p>
+          </div>
+
+          <div className="footer-section">
+            <h3><T>Services</T></h3>
             <ul>
-              <li>Personalausweis beantragen</li>
-              <li>Reisepass beantragen</li>
-              <li>Meldebescheinigung</li>
-              <li>Geburtsurkunde</li>
-              <li>Gewerbeschein</li>
-              <li>Weitere Dienstleistungen</li>
+              <li><T>Personalausweis beantragen</T></li>
+              <li><T>Reisepass beantragen</T></li>
+              <li><T>Meldebescheinigung</T></li>
+              <li><T>Geburtsurkunde</T></li>
+              <li><T>Gewerbeschein</T></li>
+              <li><T>Weitere Dienstleistungen</T></li>
             </ul>
           </div>
-          
+
           <div className="footer-section">
-            <h3>Rechtliches</h3>
+            <h3><T>Rechtliches</T></h3>
             <ul>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Impressum</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Datenschutz</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Barrierefreiheit</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Sitemap</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}><T>Impressum</T></a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}><T>Datenschutz</T></a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}><T>Barrierefreiheit</T></a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}><T>Sitemap</T></a></li>
             </ul>
           </div>
         </div>
-        
+
         <div className="footer-bottom">
-          <p>&copy; 2025 Stadt Leipzig. Alle Rechte vorbehalten.</p>
+          <p>&copy; 2025 <T>Stadt Leipzig. Alle Rechte vorbehalten.</T></p>
         </div>
       </div>
     </footer>

@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import StatusChecker from '../components/citizen/StatusChecker';
 import ApplicationStatus from '../components/citizen/ApplicationStatus';
 import { statusAPI } from '../services/api';
+import { T } from '../components/common/LanguageSwitcher';
 
 const CheckStatus = () => {
   const [searchParams] = useSearchParams();
@@ -29,9 +30,9 @@ const CheckStatus = () => {
     } catch (error) {
       console.error('Status check error:', error);
       if (error.response?.status === 404) {
-        setError('Antrag nicht gefunden. Bitte überprüfen Sie Ihre Referenznummer.');
+        setError(<T>Antrag nicht gefunden. Bitte überprüfen Sie Ihre Referenznummer.</T>);
       } else {
-        setError(error.response?.data?.detail || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+        setError(error.response?.data?.detail || <T>Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.</T>);
       }
     } finally {
       setIsLoading(false);
@@ -47,9 +48,9 @@ const CheckStatus = () => {
     <div className="check-status-page">
       <div className="container">
         <div className="page-header">
-          <h1>Antragsstatus überprüfen</h1>
+          <h1><T>Antragsstatus überprüfen</T></h1>
           <p>
-            Verfolgen Sie den Bearbeitungsstand Ihres Antrags in Echtzeit.
+            <T>Verfolgen Sie den Bearbeitungsstand Ihres Antrags in Echtzeit.</T>
           </p>
         </div>
 
@@ -64,30 +65,32 @@ const CheckStatus = () => {
           <div className="error-container">
             <div className="error-message">
               <div className="error-icon">❌</div>
-              <h3>Antrag nicht gefunden</h3>
+              <h3><T>Antrag nicht gefunden</T></h3>
               <p>{error}</p>
               <button 
                 onClick={handleNewSearch}
                 className="btn btn-primary"
               >
-                Erneut versuchen
+                <T>Erneut versuchen</T>
               </button>
             </div>
             
             <div className="help-section">
-              <h4>Hilfe bei der Suche</h4>
+              <h4><T>Hilfe bei der Suche</T></h4>
               <ul>
-                <li>Überprüfen Sie, ob Sie die Referenznummer korrekt eingegeben haben</li>
-                <li>Die Referenznummer hat das Format: LEI-XXXXXX-XXXXX</li>
-                <li>Groß- und Kleinschreibung spielen keine Rolle</li>
-                <li>Verwenden Sie keine Leerzeichen oder Bindestriche zwischen den Zeichen</li>
+                <li><T>Überprüfen Sie, ob Sie die Referenznummer korrekt eingegeben haben</T></li>
+                <li><T>Die Referenznummer hat das Format: LEI-XXXXXX-XXXXX</T></li>
+                <li><T>Groß- und Kleinschreibung spielen keine Rolle</T></li>
+                <li><T>Verwenden Sie keine Leerzeichen oder Bindestriche zwischen den Zeichen</T></li>
               </ul>
               
               <div className="contact-help">
-                <h4>Immer noch Probleme?</h4>
+                <h4><T>Immer noch Probleme?</T></h4>
                 <p>
-                  Kontaktieren Sie uns unter <strong>+49 341 123456</strong> oder 
-                  <strong> buergerbuero@leipzig.de</strong>
+                  <T>
+                    Kontaktieren Sie uns unter <strong>+49 341 123456</strong> oder 
+                    <strong> buergerbuero@leipzig.de</strong>
+                  </T>
                 </p>
               </div>
             </div>
@@ -103,14 +106,14 @@ const CheckStatus = () => {
                 onClick={handleNewSearch}
                 className="btn btn-secondary"
               >
-                Anderen Antrag suchen
+                <T>Anderen Antrag suchen</T>
               </button>
               <button 
                 onClick={() => handleStatusCheck(application.reference_number)}
                 className="btn btn-outline"
                 disabled={isLoading}
               >
-                Status aktualisieren
+                <T>Status aktualisieren</T>
               </button>
             </div>
           </div>
@@ -119,26 +122,30 @@ const CheckStatus = () => {
         <div className="info-section">
           <div className="info-grid">
             <div className="info-card">
-              <h3>🔄 Automatische Updates</h3>
+              <h3>🔄 <T>Automatische Updates</T></h3>
               <p>
-                Sie erhalten automatisch E-Mail-Benachrichtigungen, 
-                wenn sich der Status Ihres Antrags ändert.
+                <T>
+                  Sie erhalten automatisch E-Mail-Benachrichtigungen, 
+                  wenn sich der Status Ihres Antrags ändert.
+                </T>
               </p>
             </div>
             <div className="info-card">
-              <h3>⏱️ Bearbeitungszeiten</h3>
+              <h3>⏱️ <T>Bearbeitungszeiten</T></h3>
               <p>
-                Normale Anträge: 3-5 Werktage<br />
-                Eilanträge: 1-2 Werktage<br />
-                (Je nach Antragstyp)
+                <T>Normale Anträge: 3-5 Werktage</T><br />
+                <T>Eilanträge: 1-2 Werktage</T><br />
+                <T>(Je nach Antragstyp)</T>
               </p>
             </div>
             <div className="info-card">
-              <h3>📞 Support</h3>
+              <h3>📞 <T>Support</T></h3>
               <p>
-                Bei Fragen stehen wir Ihnen gerne zur Verfügung:<br />
-                Tel: +49 341 123456<br />
-                E-Mail: buergerbuero@leipzig.de
+                <T>
+                  Bei Fragen stehen wir Ihnen gerne zur Verfügung:<br />
+                  Tel: +49 341 123456<br />
+                  E-Mail: buergerbuero@leipzig.de
+                </T>
               </p>
             </div>
           </div>

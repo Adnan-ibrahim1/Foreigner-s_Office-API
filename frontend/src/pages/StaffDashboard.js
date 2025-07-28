@@ -5,6 +5,7 @@ import Dashboard from '../components/staff/Dashboard';
 import ApplicationList from '../components/staff/ApplicationList';
 import ApplicationDetail from '../components/staff/ApplicationDetail';
 import Loading from '../components/common/Loading';
+import { T } from '../components/common/LanguageSwitcher';
 
 const StaffDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -64,7 +65,7 @@ const StaffDashboard = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      setLoginError('Ein unerwarteter Fehler ist aufgetreten');
+      setLoginError(<T>Ein unerwarteter Fehler ist aufgetreten</T>);
     } finally {
       setIsLoggingIn(false);
     }
@@ -104,7 +105,7 @@ const StaffDashboard = () => {
   if (isLoading) {
     return (
       <div className="staff-dashboard-loading">
-        <Loading size="large" text="Lade Mitarbeiter-Bereich..." />
+        <Loading size="large" text={<T>Lade Mitarbeiter-Bereich...</T>} />
       </div>
     );
   }
@@ -115,12 +116,12 @@ const StaffDashboard = () => {
         <div className="container">
           <div className="login-container">
             <div className="login-card">
-              <h1>Mitarbeiter-Anmeldung</h1>
-              <p>Melden Sie sich an, um auf den Mitarbeiterbereich zuzugreifen.</p>
+              <h1><T>Mitarbeiter-Anmeldung</T></h1>
+              <p><T>Melden Sie sich an, um auf den Mitarbeiterbereich zuzugreifen.</T></p>
               
               <form onSubmit={handleLogin} className="login-form">
                 <div className="form-group">
-                  <label htmlFor="email" className="form-label">E-Mail-Adresse</label>
+                  <label htmlFor="email" className="form-label"><T>E-Mail-Adresse</T></label>
                   <input
                     type="email"
                     id="email"
@@ -134,7 +135,7 @@ const StaffDashboard = () => {
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="password" className="form-label">Passwort</label>
+                  <label htmlFor="password" className="form-label"><T>Passwort</T></label>
                   <input
                     type="password"
                     id="password"
@@ -158,14 +159,14 @@ const StaffDashboard = () => {
                   className="btn btn-primary btn-large"
                   disabled={isLoggingIn}
                 >
-                  {isLoggingIn ? <Loading size="small" text="" /> : 'Anmelden'}
+                  {isLoggingIn ? <Loading size="small" text="" /> : <T>Anmelden</T>}
                 </button>
               </form>
               
               <div className="login-help">
                 <p>
-                  <strong>Probleme beim Anmelden?</strong><br />
-                  Kontaktieren Sie den IT-Support unter it-support@leipzig.de
+                  <strong><T>Probleme beim Anmelden?</T></strong><br />
+                  <T>Kontaktieren Sie den IT-Support unter it-support@leipzig.de</T>
                 </p>
               </div>
             </div>
@@ -180,8 +181,10 @@ const StaffDashboard = () => {
       <div className="container">
         <div className="dashboard-header">
           <div className="header-left">
-            <h1>Mitarbeiter-Dashboard</h1>
-            <p>Willkommen, {user?.name || user?.email}</p>
+            <h1><T>Mitarbeiter-Dashboard</T></h1>
+            <p>
+              <T>Willkommen,</T> {user?.name || user?.email}
+            </p>
           </div>
           <div className="header-right">
             <div className="view-switcher">
@@ -189,17 +192,17 @@ const StaffDashboard = () => {
                 onClick={() => setView('dashboard')}
                 className={`btn ${view === 'dashboard' ? 'btn-primary' : 'btn-outline'}`}
               >
-                📊 Dashboard
+                📊 <T>Dashboard</T>
               </button>
               <button
                 onClick={() => setView('list')}
                 className={`btn ${view === 'list' ? 'btn-primary' : 'btn-outline'}`}
               >
-                📋 Antragsliste
+                📋 <T>Antragsliste</T>
               </button>
             </div>
             <button onClick={handleLogout} className="btn btn-secondary">
-              Abmelden
+              <T>Abmelden</T>
             </button>
           </div>
         </div>
@@ -233,7 +236,7 @@ const StaffDashboard = () => {
                 onClick={() => setView('dashboard')}
                 className="btn btn-outline back-btn"
               >
-                ← Zurück zum Dashboard
+                ← <T>Zurück zum Dashboard</T>
               </button>
               <ApplicationDetail
                 application={selectedApplication}
@@ -250,16 +253,16 @@ const StaffDashboard = () => {
         {/* Quick Stats Bar */}
         <div className="quick-stats">
           <div className="stat-item">
-            <span className="stat-label">Online seit:</span>
+            <span className="stat-label"><T>Online seit:</T></span>
             <span className="stat-value">{new Date().toLocaleTimeString('de-DE')}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">Benutzer:</span>
-            <span className="stat-value">{user?.name || 'Unbekannt'}</span>
+            <span className="stat-label"><T>Benutzer:</T></span>
+            <span className="stat-value">{user?.name || <T>Unbekannt</T>}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">Rolle:</span>
-            <span className="stat-value">{user?.is_admin ? 'Administrator' : 'Mitarbeiter'}</span>
+            <span className="stat-label"><T>Rolle:</T></span>
+            <span className="stat-value">{user?.is_admin ? <T>Administrator</T> : <T>Mitarbeiter</T>}</span>
           </div>
         </div>
       </div>

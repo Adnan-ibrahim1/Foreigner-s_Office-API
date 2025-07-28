@@ -3,6 +3,7 @@ import { applicationAPI } from '../../services/api';
 import { APPLICATION_STATUS, APPLICATION_TYPES } from '../../utils/constants';
 import { getStatusLabel, getApplicationTypeLabel, formatDateTime, debounce } from '../../utils/helpers';
 import Loading from '../common/Loading';
+import { T } from '../common/LanguageSwitcher';
 
 const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
   const [applications, setApplications] = useState([]);
@@ -44,9 +45,10 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
 
       const response = await applicationAPI.getAllApplications(params);
       setApplications(response.data.applications || []);
+      setError('');
     } catch (error) {
       console.error('Error fetching applications:', error);
-      setError('Fehler beim Laden der Anträge');
+      setError(<T>Fehler beim Laden der Anträge</T>);
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +84,7 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
       <div className="application-list-error">
         <p>{error}</p>
         <button onClick={fetchApplications} className="btn btn-primary">
-          Erneut versuchen
+          <T>Erneut versuchen</T>
         </button>
       </div>
     );
@@ -94,7 +96,7 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Suche nach Name, E-Mail oder Referenznummer..."
+            placeholder={<T>Suche nach Name, E-Mail oder Referenznummer...</T>}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -107,7 +109,7 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="filter-select"
           >
-            <option value="">Alle Status</option>
+            <option value=""><T>Alle Status</T></option>
             {Object.values(APPLICATION_STATUS).map(status => (
               <option key={status} value={status}>
                 {getStatusLabel(status)}
@@ -120,7 +122,7 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
             onChange={(e) => setTypeFilter(e.target.value)}
             className="filter-select"
           >
-            <option value="">Alle Typen</option>
+            <option value=""><T>Alle Typen</T></option>
             {Object.values(APPLICATION_TYPES).map(type => (
               <option key={type} value={type}>
                 {getApplicationTypeLabel(type)}
@@ -131,7 +133,7 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
       </div>
 
       {isLoading ? (
-        <Loading text="Lade Anträge..." />
+        <Loading text={<T>Lade Anträge...</T>} />
       ) : (
         <div className="applications-container">
           <div className="applications-header">
@@ -140,30 +142,30 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
                 onClick={() => handleSort('submitted_at')}
                 className={`sort-btn ${sortBy === 'submitted_at' ? 'active' : ''}`}
               >
-                Datum{getSortIcon('submitted_at')}
+                <T>Datum</T>{getSortIcon('submitted_at')}
               </button>
               <button
                 onClick={() => handleSort('status')}
                 className={`sort-btn ${sortBy === 'status' ? 'active' : ''}`}
               >
-                Status{getSortIcon('status')}
+                <T>Status</T>{getSortIcon('status')}
               </button>
               <button
                 onClick={() => handleSort('type')}
                 className={`sort-btn ${sortBy === 'type' ? 'active' : ''}`}
               >
-                Typ{getSortIcon('type')}
+                <T>Typ</T>{getSortIcon('type')}
               </button>
             </div>
             <span className="results-count">
-              {applications.length} Anträge
+              <T>{applications.length} Anträge</T>
             </span>
           </div>
 
           <div className="applications-list">
             {applications.length === 0 ? (
               <div className="no-applications">
-                <p>Keine Anträge gefunden.</p>
+                <p><T>Keine Anträge gefunden.</T></p>
               </div>
             ) : (
               applications.map(application => (
@@ -198,7 +200,7 @@ const ApplicationList = ({ onSelectApplication, selectedApplication }) => {
                     </div>
                     {application.urgent_request && (
                       <div className="urgent-indicator">
-                        ⚡ Eilantrag
+                        ⚡ <T>Eilantrag</T>
                       </div>
                     )}
                   </div>

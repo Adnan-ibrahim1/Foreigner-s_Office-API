@@ -7,12 +7,15 @@ import SubmitApplication from './pages/SubmitApplication';
 import CheckStatus from './pages/CheckStatus';
 import StaffDashboard from './pages/StaffDashboard';
 import './styles/App.css';
+import {LanguageSwitcher,LibreTranslationProvider} from './components/common/LanguageSwitcher';
 
 function App() {
   return (
+    <LibreTranslationProvider>
     <Router>
       <div className="App">
         <Header />
+        <LanguageSwitcher />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -24,6 +27,7 @@ function App() {
         <Footer />
       </div>
     </Router>
+    </LibreTranslationProvider>
   );
 }
 

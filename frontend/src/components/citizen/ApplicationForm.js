@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { APPLICATION_TYPES } from '../../utils/constants';
 import { validateEmail, validatePhone, validatePostalCode, getApplicationTypeLabel } from '../../utils/helpers';
 import Loading from '../common/Loading';
+import { T } from '../common/LanguageSwitcher';
 
 const ApplicationForm = ({ onSubmit, isSubmitting }) => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,6 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
       [name]: type === 'checkbox' ? checked : value
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -47,27 +47,27 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.type) newErrors.type = 'Antragstyp ist erforderlich';
-    if (!formData.firstName.trim()) newErrors.firstName = 'Vorname ist erforderlich';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Nachname ist erforderlich';
+    if (!formData.type) newErrors.type = <T>Antragstyp ist erforderlich</T>;
+    if (!formData.firstName.trim()) newErrors.firstName = <T>Vorname ist erforderlich</T>;
+    if (!formData.lastName.trim()) newErrors.lastName = <T>Nachname ist erforderlich</T>;
     if (!formData.email.trim()) {
-      newErrors.email = 'E-Mail-Adresse ist erforderlich';
+      newErrors.email = <T>E-Mail-Adresse ist erforderlich</T>;
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Ungültige E-Mail-Adresse';
+      newErrors.email = <T>Ungültige E-Mail-Adresse</T>;
     }
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Telefonnummer ist erforderlich';
+      newErrors.phone = <T>Telefonnummer ist erforderlich</T>;
     } else if (!validatePhone(formData.phone)) {
-      newErrors.phone = 'Ungültige Telefonnummer';
+      newErrors.phone = <T>Ungültige Telefonnummer</T>;
     }
-    if (!formData.address.trim()) newErrors.address = 'Adresse ist erforderlich';
-    if (!formData.city.trim()) newErrors.city = 'Stadt ist erforderlich';
+    if (!formData.address.trim()) newErrors.address = <T>Adresse ist erforderlich</T>;
+    if (!formData.city.trim()) newErrors.city = <T>Stadt ist erforderlich</T>;
     if (!formData.postalCode.trim()) {
-      newErrors.postalCode = 'Postleitzahl ist erforderlich';
+      newErrors.postalCode = <T>Postleitzahl ist erforderlich</T>;
     } else if (!validatePostalCode(formData.postalCode)) {
-      newErrors.postalCode = 'Ungültige Postleitzahl';
+      newErrors.postalCode = <T>Ungültige Postleitzahl</T>;
     }
-    if (!formData.birthDate) newErrors.birthDate = 'Geburtsdatum ist erforderlich';
+    if (!formData.birthDate) newErrors.birthDate = <T>Geburtsdatum ist erforderlich</T>;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -75,21 +75,15 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     const applicationData = new FormData();
-    
-    // Add form fields
     Object.keys(formData).forEach(key => {
       if (key !== 'documents') {
         applicationData.append(key, formData[key]);
       }
     });
 
-    // Add files
     files.forEach(file => {
       applicationData.append('documents', file);
     });
@@ -109,10 +103,10 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
   return (
     <form onSubmit={handleSubmit} className="application-form">
       <div className="form-section">
-        <h3>Antragstyp</h3>
+        <h3><T>Antragstyp</T></h3>
         <div className="form-group">
           <label htmlFor="type" className="form-label">
-            Welchen Service benötigen Sie? *
+            <T>Welchen Service benötigen Sie? *</T>
           </label>
           <select
             id="type"
@@ -122,7 +116,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
             className={`form-select ${errors.type ? 'error' : ''}`}
             required
           >
-            <option value="">Bitte wählen...</option>
+            <option value=""><T>Bitte wählen...</T></option>
             {Object.values(APPLICATION_TYPES).map(type => (
               <option key={type} value={type}>
                 {getApplicationTypeLabel(type)}
@@ -134,10 +128,10 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
       </div>
 
       <div className="form-section">
-        <h3>Persönliche Daten</h3>
+        <h3><T>Persönliche Daten</T></h3>
         <div className="form-group-row">
           <div className="form-group">
-            <label htmlFor="firstName" className="form-label">Vorname *</label>
+            <label htmlFor="firstName" className="form-label"><T>Vorname *</T></label>
             <input
               type="text"
               id="firstName"
@@ -150,7 +144,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
             {errors.firstName && <span className="error-message">{errors.firstName}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="lastName" className="form-label">Nachname *</label>
+            <label htmlFor="lastName" className="form-label"><T>Nachname *</T></label>
             <input
               type="text"
               id="lastName"
@@ -165,7 +159,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="birthDate" className="form-label">Geburtsdatum *</label>
+          <label htmlFor="birthDate" className="form-label"><T>Geburtsdatum *</T></label>
           <input
             type="date"
             id="birthDate"
@@ -180,9 +174,9 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
       </div>
 
       <div className="form-section">
-        <h3>Kontaktdaten</h3>
+        <h3><T>Kontaktdaten</T></h3>
         <div className="form-group">
-          <label htmlFor="email" className="form-label">E-Mail-Adresse *</label>
+          <label htmlFor="email" className="form-label"><T>E-Mail-Adresse *</T></label>
           <input
             type="email"
             id="email"
@@ -196,7 +190,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="phone" className="form-label">Telefonnummer *</label>
+          <label htmlFor="phone" className="form-label"><T>Telefonnummer *</T></label>
           <input
             type="tel"
             id="phone"
@@ -211,9 +205,9 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
       </div>
 
       <div className="form-section">
-        <h3>Adresse</h3>
+        <h3><T>Adresse</T></h3>
         <div className="form-group">
-          <label htmlFor="address" className="form-label">Straße und Hausnummer *</label>
+          <label htmlFor="address" className="form-label"><T>Straße und Hausnummer *</T></label>
           <input
             type="text"
             id="address"
@@ -228,7 +222,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
 
         <div className="form-group-row">
           <div className="form-group">
-            <label htmlFor="postalCode" className="form-label">Postleitzahl *</label>
+            <label htmlFor="postalCode" className="form-label"><T>Postleitzahl *</T></label>
             <input
               type="text"
               id="postalCode"
@@ -242,7 +236,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
             {errors.postalCode && <span className="error-message">{errors.postalCode}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="city" className="form-label">Stadt *</label>
+            <label htmlFor="city" className="form-label"><T>Stadt *</T></label>
             <input
               type="text"
               id="city"
@@ -258,10 +252,10 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
       </div>
 
       <div className="form-section">
-        <h3>Dokumente</h3>
+        <h3><T>Dokumente</T></h3>
         <div className="form-group">
           <label htmlFor="documents" className="form-label">
-            Dokumente anhängen (optional)
+            <T>Dokumente anhängen (optional)</T>
           </label>
           <input
             type="file"
@@ -273,13 +267,13 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
             accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
           />
           <small className="form-help">
-            Erlaubte Dateiformate: PDF, JPG, PNG, DOC, DOCX (max. 10MB pro Datei)
+            <T>Erlaubte Dateiformate: PDF, JPG, PNG, DOC, DOCX (max. 10MB pro Datei)</T>
           </small>
         </div>
 
         {files.length > 0 && (
           <div className="file-list">
-            <h4>Ausgewählte Dateien:</h4>
+            <h4><T>Ausgewählte Dateien:</T></h4>
             {files.map((file, index) => (
               <div key={index} className="file-item">
                 <span className="file-name">{file.name}</span>
@@ -289,7 +283,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
                   onClick={() => removeFile(index)}
                   className="btn btn-small btn-danger"
                 >
-                  Entfernen
+                  <T>Entfernen</T>
                 </button>
               </div>
             ))}
@@ -298,10 +292,10 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
       </div>
 
       <div className="form-section">
-        <h3>Zusätzliche Informationen</h3>
+        <h3><T>Zusätzliche Informationen</T></h3>
         <div className="form-group">
           <label htmlFor="notes" className="form-label">
-            Anmerkungen (optional)
+            <T>Anmerkungen (optional)</T>
           </label>
           <textarea
             id="notes"
@@ -323,7 +317,7 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
               onChange={handleInputChange}
             />
             <span className="checkmark"></span>
-            Eilantrag (Zusätzliche Gebühren können anfallen)
+            <T>Eilantrag (Zusätzliche Gebühren können anfallen)</T>
           </label>
         </div>
       </div>
@@ -334,10 +328,10 @@ const ApplicationForm = ({ onSubmit, isSubmitting }) => {
           className="btn btn-primary btn-large"
           disabled={isSubmitting}
         >
-          {isSubmitting ? <Loading size="small" text="" /> : 'Antrag einreichen'}
+          {isSubmitting ? <Loading size="small" text="" /> : <T>Antrag einreichen</T>}
         </button>
         <p className="form-note">
-          * Pflichtfelder müssen ausgefüllt werden
+          <T>* Pflichtfelder müssen ausgefüllt werden</T>
         </p>
       </div>
     </form>

@@ -3,6 +3,7 @@ import { applicationAPI } from '../../services/api';
 import { APPLICATION_STATUS } from '../../utils/constants';
 import { getApplicationTypeLabel, getStatusLabel, formatDateTime } from '../../utils/helpers';
 import Loading from '../common/Loading';
+import { T} from '../common/LanguageSwitcher';
 
 const ApplicationDetail = ({ application, onUpdate, onClose }) => {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -14,7 +15,7 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
   if (!application) {
     return (
       <div className="application-detail empty">
-        <p>Wählen Sie einen Antrag aus der Liste aus, um Details anzuzeigen.</p>
+        <p><T>Wählen Sie einen Antrag aus der Liste aus, um Details anzuzeigen.</T></p>
       </div>
     );
   }
@@ -30,7 +31,7 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
       onUpdate();
     } catch (error) {
       console.error('Error updating application:', error);
-      alert('Fehler beim Aktualisieren des Antrags');
+      alert(<T>Fehler beim Aktualisieren des Antrags</T>);
     } finally {
       setIsUpdating(false);
     }
@@ -46,7 +47,7 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
       onUpdate();
     } catch (error) {
       console.error('Error adding comment:', error);
-      alert('Fehler beim Hinzufügen des Kommentars');
+      alert(<T>Fehler beim Hinzufügen des Kommentars</T>);
     } finally {
       setIsAddingComment(false);
     }
@@ -70,10 +71,10 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
     <div className="application-detail">
       <div className="detail-header">
         <div className="header-left">
-          <h2>Antragsdetails</h2>
+          <h2><T>Antragsdetails</T></h2>
           <span className="reference-number">{application.reference_number}</span>
         </div>
-        <button onClick={onClose} className="close-btn" title="Schließen">
+        <button onClick={onClose} className="close-btn" title={<T>Schließen</T>}>
           ✕
         </button>
       </div>
@@ -81,30 +82,30 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
       <div className="detail-content">
         {/* Basic Information */}
         <section className="detail-section">
-          <h3>Grundinformationen</h3>
+          <h3><T>Grundinformationen</T></h3>
           <div className="info-grid">
             <div className="info-item">
-              <label>Antragstyp:</label>
+              <label><T>Antragstyp:</T></label>
               <span>{getApplicationTypeLabel(application.type)}</span>
             </div>
             <div className="info-item">
-              <label>Status:</label>
+              <label><T>Status:</T></label>
               <span className={`status-badge status-${application.status}`}>
                 {getStatusLabel(application.status)}
               </span>
             </div>
             <div className="info-item">
-              <label>Eingereicht am:</label>
+              <label><T>Eingereicht am:</T></label>
               <span>{formatDateTime(application.submitted_at)}</span>
             </div>
             <div className="info-item">
-              <label>Zuletzt aktualisiert:</label>
+              <label><T>Zuletzt aktualisiert:</T></label>
               <span>{formatDateTime(application.updated_at)}</span>
             </div>
             {application.urgent_request && (
               <div className="info-item">
-                <label>Eilantrag:</label>
-                <span className="urgent-badge">Ja</span>
+                <label><T>Eilantrag:</T></label>
+                <span className="urgent-badge"><T>Ja</T></span>
               </div>
             )}
           </div>
@@ -112,30 +113,30 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
 
         {/* Applicant Information */}
         <section className="detail-section">
-          <h3>Antragsteller</h3>
+          <h3><T>Antragsteller</T></h3>
           <div className="info-grid">
             <div className="info-item">
-              <label>Name:</label>
+              <label><T>Name:</T></label>
               <span>{application.first_name} {application.last_name}</span>
             </div>
             <div className="info-item">
-              <label>Geburtsdatum:</label>
+              <label><T>Geburtsdatum:</T></label>
               <span>{application.birth_date}</span>
             </div>
             <div className="info-item">
-              <label>E-Mail:</label>
+              <label><T>E-Mail:</T></label>
               <span>
                 <a href={`mailto:${application.email}`}>{application.email}</a>
               </span>
             </div>
             <div className="info-item">
-              <label>Telefon:</label>
+              <label><T>Telefon:</T></label>
               <span>
                 <a href={`tel:${application.phone}`}>{application.phone}</a>
               </span>
             </div>
             <div className="info-item full-width">
-              <label>Adresse:</label>
+              <label><T>Adresse:</T></label>
               <span>
                 {application.address}<br />
                 {application.postal_code} {application.city}
@@ -147,7 +148,7 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
         {/* Notes and Comments */}
         {application.notes && (
           <section className="detail-section">
-            <h3>Anmerkungen des Antragstellers</h3>
+            <h3><T>Anmerkungen des Antragstellers</T></h3>
             <div className="notes-content">
               {application.notes}
             </div>
@@ -157,14 +158,14 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
         {/* Documents */}
         {application.documents && application.documents.length > 0 && (
           <section className="detail-section">
-            <h3>Dokumente</h3>
+            <h3><T>Dokumente</T></h3>
             <div className="documents-list">
               {application.documents.map((doc, index) => (
                 <div key={index} className="document-item">
                   <span className="document-name">{doc.name}</span>
                   <span className="document-size">({doc.size})</span>
                   <button className="btn btn-small btn-outline">
-                    Herunterladen
+                    <T>Herunterladen</T>
                   </button>
                 </div>
               ))}
@@ -174,10 +175,10 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
 
         {/* Status Update */}
         <section className="detail-section">
-          <h3>Status aktualisieren</h3>
+          <h3><T>Status aktualisieren</T></h3>
           <div className="status-update">
             <div className="form-group">
-              <label htmlFor="status-select">Neuer Status:</label>
+              <label htmlFor="status-select"><T>Neuer Status:</T></label>
               <select
                 id="status-select"
                 value={newStatus}
@@ -194,14 +195,14 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="notes-textarea">Interne Notizen:</label>
+              <label htmlFor="notes-textarea"><T>Interne Notizen:</T></label>
               <textarea
                 id="notes-textarea"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 className="form-textarea"
                 rows="4"
-                placeholder="Interne Notizen für andere Mitarbeiter..."
+                placeholder={<T>Interne Notizen für andere Mitarbeiter...</T>}
               />
             </div>
 
@@ -211,7 +212,7 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
                 className="btn btn-primary"
                 disabled={isUpdating || !canUpdateStatus()}
               >
-                {isUpdating ? <Loading size="small" text="" /> : 'Status aktualisieren'}
+                {isUpdating ? <Loading size="small" text="" /> : <T>Status aktualisieren</T>}
               </button>
               
               {canUpdateStatus() && getNextStatus(application.status) && (
@@ -223,12 +224,15 @@ const ApplicationDetail = ({ application, onUpdate, onClose }) => {
                   className="btn btn-outline"
                   disabled={isUpdating}
                 >
-                  Zum nächsten Status
+                  <T>Zum nächsten Status</T>
                 </button>
               )}
             </div>
           </div>
         </section>
-        </div>
-    </div>)}
+      </div>
+    </div>
+  );
+};
+
 export default ApplicationDetail;

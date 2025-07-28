@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ApplicationForm from '../components/citizen/ApplicationForm';
 import { applicationAPI } from '../services/api';
+import { T } from '../components/common/LanguageSwitcher';
 
 const SubmitApplication = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -10,27 +11,27 @@ const SubmitApplication = () => {
 
   const handleSubmit = async (applicationData) => {
     setIsSubmitting(true);
-    
+
     try {
       const response = await applicationAPI.submitApplication(applicationData);
       const { reference_number, id } = response.data;
-      
+
       setSubmitResult({
         success: true,
         referenceNumber: reference_number,
         applicationId: id
       });
-      
+
       // Redirect to status page after 3 seconds
       setTimeout(() => {
         navigate(`/status?ref=${reference_number}`);
       }, 3000);
-      
+
     } catch (error) {
       console.error('Application submission error:', error);
       setSubmitResult({
         success: false,
-        error: error.response?.data?.detail || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.'
+        error: error.response?.data?.detail || <T>Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.</T>
       });
     } finally {
       setIsSubmitting(false);
@@ -44,24 +45,23 @@ const SubmitApplication = () => {
           <div className="container">
             <div className="success-message">
               <div className="success-icon">✅</div>
-              <h1>Antrag erfolgreich eingereicht!</h1>
+              <h1><T>Antrag erfolgreich eingereicht!</T></h1>
               <p>
-                Ihr Antrag wurde erfolgreich eingereicht und hat die Referenznummer:
+                <T>Ihr Antrag wurde erfolgreich eingereicht und hat die Referenznummer:</T>
               </p>
               <div className="reference-number">
                 {submitResult.referenceNumber}
               </div>
               <p>
-                Bitte notieren Sie sich diese Nummer. Sie benötigen sie, um den Status 
-                Ihres Antrags zu verfolgen.
+                <T>Bitte notieren Sie sich diese Nummer. Sie benötigen sie, um den Status Ihres Antrags zu verfolgen.</T>
               </p>
               <div className="next-steps">
-                <h3>Nächste Schritte:</h3>
+                <h3><T>Nächste Schritte:</T></h3>
                 <ul>
-                  <li>Sie erhalten eine Bestätigungs-E-Mail mit allen Details</li>
-                  <li>Wir werden Ihren Antrag innerhalb von 2-3 Werktagen bearbeiten</li>
-                  <li>Sie werden über den Fortschritt per E-Mail informiert</li>
-                  <li>Den aktuellen Status können Sie jederzeit online überprüfen</li>
+                  <li><T>Sie erhalten eine Bestätigungs-E-Mail mit allen Details</T></li>
+                  <li><T>Wir werden Ihren Antrag innerhalb von 2-3 Werktagen bearbeiten</T></li>
+                  <li><T>Sie werden über den Fortschritt per E-Mail informiert</T></li>
+                  <li><T>Den aktuellen Status können Sie jederzeit online überprüfen</T></li>
                 </ul>
               </div>
               <div className="actions">
@@ -69,17 +69,17 @@ const SubmitApplication = () => {
                   onClick={() => navigate(`/status?ref=${submitResult.referenceNumber}`)}
                   className="btn btn-primary"
                 >
-                  Status überprüfen
+                  <T>Status überprüfen</T>
                 </button>
                 <button 
                   onClick={() => navigate('/')}
                   className="btn btn-secondary"
                 >
-                  Zur Startseite
+                  <T>Zur Startseite</T>
                 </button>
               </div>
               <p className="redirect-notice">
-                Sie werden automatisch zur Statusseite weitergeleitet...
+                <T>Sie werden automatisch zur Statusseite weitergeleitet...</T>
               </p>
             </div>
           </div>
@@ -91,13 +91,13 @@ const SubmitApplication = () => {
           <div className="container">
             <div className="error-message">
               <div className="error-icon">❌</div>
-              <h1>Fehler beim Einreichen des Antrags</h1>
+              <h1><T>Fehler beim Einreichen des Antrags</T></h1>
               <p>{submitResult.error}</p>
               <button 
                 onClick={() => setSubmitResult(null)}
                 className="btn btn-primary"
               >
-                Erneut versuchen
+                <T>Erneut versuchen</T>
               </button>
             </div>
           </div>
@@ -110,10 +110,9 @@ const SubmitApplication = () => {
     <div className="submit-application-page">
       <div className="container">
         <div className="page-header">
-          <h1>Antrag stellen</h1>
+          <h1><T>Antrag stellen</T></h1>
           <p>
-            Füllen Sie das folgende Formular aus, um Ihren Antrag zu stellen. 
-            Alle mit * markierten Felder sind Pflichtfelder.
+            <T>Füllen Sie das folgende Formular aus, um Ihren Antrag zu stellen. Alle mit * markierten Felder sind Pflichtfelder.</T>
           </p>
         </div>
 
@@ -125,24 +124,24 @@ const SubmitApplication = () => {
         </div>
 
         <div className="help-section">
-          <h3>Benötigen Sie Hilfe?</h3>
+          <h3><T>Benötigen Sie Hilfe?</T></h3>
           <div className="help-grid">
             <div className="help-item">
-              <h4>📞 Telefonische Beratung</h4>
+              <h4>📞 <T>Telefonische Beratung</T></h4>
               <p>
-                Rufen Sie uns an: +49 341 123456<br />
-                Mo-Fr: 8:00-16:00 Uhr
+                <T>Rufen Sie uns an:</T> +49 341 123456<br />
+                <T>Mo-Fr: 8:00-16:00 Uhr</T>
               </p>
             </div>
             <div className="help-item">
-              <h4>✉️ E-Mail Support</h4>
+              <h4>✉️ <T>E-Mail Support</T></h4>
               <p>
-                Schreiben Sie uns: buergerbuero@leipzig.de<br />
-                Wir antworten innerhalb von 24 Stunden
+                <T>Schreiben Sie uns:</T> buergerbuero@leipzig.de<br />
+                <T>Wir antworten innerhalb von 24 Stunden</T>
               </p>
             </div>
             <div className="help-item">
-              <h4>🏢 Persönlicher Besuch</h4>
+              <h4>🏢 <T>Persönlicher Besuch</T></h4>
               <p>
                 Neues Rathaus, Martin-Luther-Ring 4-6<br />
                 04109 Leipzig

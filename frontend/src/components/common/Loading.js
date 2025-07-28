@@ -1,6 +1,7 @@
 import React from 'react';
+import { T } from '../common/LanguageSwitcher';
 
-const Loading = ({ size = 'medium', text = 'Lädt...' }) => {
+const Loading = ({ size = 'medium', text }) => {
   const sizeClasses = {
     small: 'loading-small',
     medium: 'loading-medium',
@@ -12,7 +13,11 @@ const Loading = ({ size = 'medium', text = 'Lädt...' }) => {
       <div className="loading-spinner">
         <div className="spinner"></div>
       </div>
-      {text && <p className="loading-text">{text}</p>}
+      {text !== undefined ? (
+        <p className="loading-text">{text}</p>
+      ) : (
+        <p className="loading-text"><T>Lädt...</T></p>
+      )}
     </div>
   );
 };
