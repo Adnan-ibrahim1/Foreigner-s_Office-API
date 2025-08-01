@@ -23,7 +23,6 @@ async def create_application(
     db: Session = Depends(get_db)
 ):
     """Submit a new application"""
-    
     try:
         logger.info(f"Creating application of type: {application.application_type}")
         
@@ -68,7 +67,6 @@ async def create_application(
             old_status=None,
             new_status=ApplicationStatus.EINGEGANGEN,
             message="Application submitted successfully",
-            updated_by="system"
         )
         
         db.add(status_update)
@@ -90,10 +88,32 @@ async def create_application(
             logger.error(f"Error adding notification task: {e}")
             # Don't fail the application creation if notification fails
         
-        return ApplicationResponse(
-            **db_application.__dict__,
-            progress_percentage=10  # Initial progress
-        )
+        response_data = {
+            "id": str(db_application.id),
+            "type": db_application.application_type.value if hasattr(db_application.application_type, 'value') else str(db_application.application_type).split('.')[-1].lower(), 
+            "email": str(db_application.email),
+            "firstName": str(db_application.first_name),
+            "lastName": str(db_application.last_name),
+            "birthDate": db_application.date_of_birth,
+            "phone": str(db_application.phone) if db_application.phone else None,
+            "nationality": str(db_application.nationality),
+            "address": str(db_application.address),
+            "language_preference": str(db_application.language_preference),
+            "status": ApplicationStatus.EINGEGANGEN,
+            "estimated_completion": db_application.estimated_completion,
+            "submitted_at": getattr(db_application, 'created_at', None) or datetime.now(),
+            "updated_at": getattr(db_application, 'updated_at', None) or datetime.now(),
+            "priority": "normal",
+            "actual_completion": None,
+            "case_worker_id": None,
+            "notes": None,
+            "is_urgent": False,
+            "requires_appointment": False,
+            "documents_complete": False,
+            "progress_percentage": 10
+        }
+        
+        return ApplicationResponse(**response_data)
         
     except Exception as e:
         logger.error(f"Error creating application: {e}")
@@ -102,7 +122,6 @@ async def create_application(
             status_code=500,
             detail=f"Failed to create application: {str(e)}"
         )
-
 @router.post("/check-status", response_model=ApplicationResponse)
 async def check_application_status(
     status_check: ApplicationStatusCheck,
@@ -135,11 +154,32 @@ async def check_application_status(
             ApplicationStatus.ABGESCHLOSSEN: 100,
             ApplicationStatus.ABGELEHNT: 100,
         }
+        response_data = {
+            "id": str(application.id),
+            "type": application.application_type.value if hasattr(application.application_type, 'value') else str(application.application_type).split('.')[-1].lower(), 
+            "email": str(application.email),
+            "firstName": str(application.first_name),
+            "lastName": str(application.last_name),
+            "birthDate": application.date_of_birth,
+            "phone": str(application.phone) if application.phone else None,
+            "nationality": str(application.nationality),
+            "address": str(application.address),
+            "language_preference": str(application.language_preference),
+            "status": ApplicationStatus.EINGEGANGEN,
+            "estimated_completion": application.estimated_completion,
+            "submitted_at": getattr(application, 'created_at', None) or datetime.now(),
+            "updated_at": getattr(application, 'updated_at', None) or datetime.now(),
+            "priority": "normal",
+            "actual_completion": None,
+            "case_worker_id": None,
+            "notes": None,
+            "is_urgent": False,
+            "requires_appointment": False,
+            "documents_complete": False,
+            "progress_percentage": progress_map.get(application.status, 0)
+        }
         
-        return ApplicationResponse(
-            **application.__dict__,
-            progress_percentage=progress_map.get(application.status, 0)
-        )
+        return ApplicationResponse(**response_data)
         
     except HTTPException:
         raise

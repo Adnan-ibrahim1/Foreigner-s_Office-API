@@ -6,9 +6,9 @@ class AuthService {
     this.user = JSON.parse(localStorage.getItem('user') || 'null');
   }
 
-  async login(email, password) {
+  async login(username, password) {
     try {
-      const response = await authAPI.login({ email, password });
+      const response = await authAPI.login({ username, password });
       const { token, user } = response.data;
       
       this.token = token;

@@ -1,19 +1,21 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, Field
 from typing import Optional, List
 from datetime import datetime
 from app.models.application import ApplicationStatus, ApplicationType, Priority
 
 # Base schemas
 class ApplicationBase(BaseModel):
-    application_type: ApplicationType
-    email: EmailStr
-    first_name: str
-    last_name: str
-    date_of_birth: str
-    phone: str
-    nationality: Optional[str] = None
-    address: Optional[str] = None
-    language_preference: str = "de"
+    application_type: ApplicationType = Field(..., alias="type")
+    email: EmailStr = Field(..., alias="email")
+    first_name: str = Field(..., alias="firstName")
+    last_name: str = Field(..., alias="lastName")
+    date_of_birth: str = Field(..., alias="birthDate")
+    phone: str = Field(..., alias="phone")
+
+    nationality: Optional[str] = Field(None, alias="nationality")  # If it exists, same key
+    address: Optional[str] = Field(None, alias="address")
+    language_preference: str = Field("de", alias="languagePreference")
+    
 
 class ApplicationCreate(ApplicationBase):
     @validator('date_of_birth')
@@ -68,7 +70,6 @@ class StatusUpdateResponse(BaseModel):
     old_status: Optional[ApplicationStatus]
     new_status: ApplicationStatus
     message: str
-    updated_by: str
     created_at: datetime
     
     class Config:
