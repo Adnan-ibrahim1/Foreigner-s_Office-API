@@ -53,12 +53,12 @@ const StaffDashboard = () => {
     setLoginError('');
 
     try {
-      const result = await authService.login(loginForm.email, loginForm.password);
+      const result = await authService.login(loginForm.username, loginForm.password);
       
       if (result.success) {
         setUser(result.user);
         setIsAuthenticated(true);
-        setLoginForm({ email: '', password: '' });
+        setLoginForm({ username: '', password: '' });
       } else {
         setLoginError(result.error);
       }
@@ -119,18 +119,18 @@ const StaffDashboard = () => {
               <p>Melden Sie sich an, um auf den Mitarbeiterbereich zuzugreifen.</p>
               
               <form onSubmit={handleLogin} className="login-form">
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">E-Mail-Adresse</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={loginForm.email}
-                    onChange={handleInputChange}
-                    className={`form-input ${loginError ? 'error' : ''}`}
-                    required
-                    disabled={isLoggingIn}
-                  />
+              <div className="form-group">
+                <label htmlFor="username" className="form-label">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={loginForm.username}
+                  onChange={handleInputChange}
+                  className={`form-input ${loginError ? 'error' : ''}`}
+                  required
+                  disabled={isLoggingIn}
+                />
                 </div>
                 
                 <div className="form-group">

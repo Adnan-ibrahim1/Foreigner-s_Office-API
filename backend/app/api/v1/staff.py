@@ -286,7 +286,6 @@ async def update_application_status(
         old_status=old_status,
         new_status=status_update.new_status,
         message=status_update.message,
-        updated_by=current_user.id
     )
     
     db.add(db_status_update)
@@ -341,7 +340,6 @@ async def assign_application(
         old_status=application.status,
         new_status=application.status,
         message=message,
-        updated_by=current_user.id
     )
     
     db.add(status_update)
@@ -375,7 +373,6 @@ async def get_application_status_history(
             "old_status": update.old_status,
             "new_status": update.new_status,
             "message": update.message,
-            "updated_by": update.updated_by,
             "created_at": update.created_at
         }
         for update in updates

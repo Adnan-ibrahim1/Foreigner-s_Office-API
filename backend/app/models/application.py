@@ -77,12 +77,10 @@ class StatusUpdate(Base):
     old_status = Column(Enum(ApplicationStatus))
     new_status = Column(Enum(ApplicationStatus), nullable=False)
     message = Column(Text)
-    updated_by = Column(String, ForeignKey("users.id"), nullable=True)  
     created_at = Column(DateTime, default=func.now())
     
     # Relationships
     application = relationship("Application", back_populates="status_updates")
-    updated_by_user = relationship("User")
 
 class Document(Base):
     __tablename__ = "documents"

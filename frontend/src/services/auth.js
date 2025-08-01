@@ -8,7 +8,11 @@ class AuthService {
 
   async login(username, password) {
     try {
-      const response = await authAPI.login({ username, password });
+      const credentials = { 
+        "username": username, 
+        "password": password 
+      };      
+      const response = await authAPI.login(credentials);
       const { token, user } = response.data;
       
       this.token = token;
